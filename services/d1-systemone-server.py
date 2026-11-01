@@ -17,12 +17,15 @@ Wire contract (same shape the adapter previously got from mlx-vlm):
 
 import json
 import logging
+import os
 import threading
 import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
-MODEL = "LiquidAI/d1-Omni-2B-MLX-8bit"
+# Model is operator-controlled: set KEV_MODEL in config/model.env (see
+# scripts/set-model.sh) or in the launchd environment. Default below.
+MODEL = os.environ.get("KEV_MODEL", "LiquidAI/d1-Omni-2B-MLX-8bit")
 USAGE_LOG = Path(__file__).resolve().parent.parent / "logs" / "usage.jsonl"
 LISTEN_HOST = "127.0.0.1"
 LISTEN_PORT = 8090

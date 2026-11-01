@@ -44,11 +44,27 @@ engine over the same `/v1/decisions` contract.
 After editing plugin code: `openclaw plugins reload d1-local` (config edits
 hot-reload).
 
+## Switching models (no agent needed)
+
+`config/model.env` is the single source of truth for which checkpoint the
+runner loads. Change it with one command:
+
+```sh
+scripts/set-model.sh LiquidAI/d1-Omni-600M-MLX-8bit   # validates on HF, downloads, swaps, restarts, health-checks
+scripts/set-model.sh                                   # show current + cached models
+scripts/set-model.sh --rollback                        # revert to previous checkpoint
+```
+
+The `decisionModel` selection in `openclaw.json` is a label only — it does not
+load models, so only the runner needs restarting (auto-handled).
+
 ## Operations
 
 - Health: `curl 127.0.0.1:8090/health` (and `127.0.0.1:8009/health` for the bridge).
 - Logs: `workspace/logs/d1-server.{err.,}log`, `typesafe-adapter.{err.,}log`.
-- Units: `com.openclaw.d1-server`, `com.openclaw.typesafe-adapter` (user LaunchAgents).
+- Units: `com.openclaw.d1-server`, `com.openclaw.typesafe-adapter` (user LaunchAgents);
+  the runner starts via `scripts/run-server.sh`, which sources `config/model.env`
+  (`KEV_MODEL`, `KEV_PYTHON`).
 - Log hygiene: `scripts/clean-logs.sh` + LaunchAgent `com.openclaw.kev-log-clean`
   prune `usage.jsonl` records older than 90 days and truncate oversized launchd
   logs daily at 03:15.
