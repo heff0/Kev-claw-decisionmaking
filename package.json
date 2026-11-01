@@ -1,5 +1,5 @@
 {
-  "name": "openclaw-d1-local",
+  "name": "Kev-claw-decisionmaking",
   "version": "0.1.0",
   "type": "module",
   "description": "Local d1-Omni decision provider plugin for OpenClaw, plus the MLX system_one runner and optional TypeSafe-compat adapter services.",

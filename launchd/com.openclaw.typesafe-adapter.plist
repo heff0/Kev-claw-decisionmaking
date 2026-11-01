@@ -8,10 +8,10 @@
 	<array>
 		<string>/Users/remote-mac/.openclaw/workspace/mlx-env/bin/python</string>
 		<string>-u</string>
-		<string>/Users/remote-mac/.openclaw/workspace/openclaw-d1-local/services/d1-typesafe-adapter.py</string>
+		<string>/Users/Shared/dev/Kev-claw-decisionmaking/services/d1-typesafe-adapter.py</string>
 	</array>
 	<key>WorkingDirectory</key>
-	<string>/Users/remote-mac/.openclaw/workspace/openclaw-d1-local</string>
+	<string>/Users/Shared/dev/Kev-claw-decisionmaking</string>
 	<key>RunAtLoad</key>
 	<true/>
 	<key>KeepAlive</key>
