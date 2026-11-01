@@ -29,7 +29,7 @@ engine over the same `/v1/decisions` contract.
 {
   plugins: {
     allow: [..., "d1-local"],
-    load: { paths: ["/Users/Shared/dev/Kev-claw-decisionmaking"] },
+    load: { paths: ["/Users/Shared/dec/Kev-claw-decisionmaking"] },
     entries: { "d1-local": { enabled: true, config: { baseUrl: "http://127.0.0.1:8090/v1/decisions" } } },
   },
   agents: { defaults: { decisionModel: "d1-local/d1-omni-2b" } },
