@@ -1,0 +1,52 @@
+{
+  "cases": [
+    {
+      "id": "outage-escalate",
+      "state": {"message": "Checkout is failing for every customer since the last deploy."},
+      "questions": {
+        "escalate": {"type": "noul", "instructions": "Does this need incident response?", "criteria": {"false": "A routine request can follow normal handling", "true": "Widespread service outages"}}
+      },
+      "expect": {"escalate": {"type": "noul", "min": 0.7}}
+    },
+    {
+      "id": "routine-noul",
+      "state": {"message": "Hi, can you reset my password? I forgot it."},
+      "questions": {
+        "escalate": {"type": "noul", "instructions": "Does this need incident response?", "criteria": {"false": "A routine request can follow normal handling", "true": "Widespread service outages"}}
+      },
+      "expect": {"escalate": {"type": "noul", "max": 0.3}}
+    },
+    {
+      "id": "route-support",
+      "state": {"message": "The mobile app crashes every time I open the settings page."},
+      "questions": {
+        "route": {"type": "choice", "instructions": "Route this request.", "criteria": {"support": "Product bugs and service failures", "billing": "Payment and invoice questions"}}
+      },
+      "expect": {"route": {"type": "choice", "answer": "support", "min_confidence": 0.6}}
+    },
+    {
+      "id": "route-billing",
+      "state": {"message": "I was double charged on my last invoice and want a refund."},
+      "questions": {
+        "route": {"type": "choice", "instructions": "Route this request.", "criteria": {"support": "Product bugs and service failures", "billing": "Payment and invoice questions"}}
+      },
+      "expect": {"route": {"type": "choice", "answer": "billing", "min_confidence": 0.6}}
+    },
+    {
+      "id": "score-low-urgency",
+      "state": {"message": "Typo on the About page: 'Recieve' should be 'Receive'."},
+      "questions": {
+        "urgency": {"type": "score", "instructions": "How urgent is this?", "criteria": ["No disruption", "One workflow blocked", "Widespread outage"]}
+      },
+      "expect": {"urgency": {"type": "score", "answer": 0.0}}
+    },
+    {
+      "id": "score-high-urgency",
+      "state": {"message": "Production database is down. No customer can log in."},
+      "questions": {
+        "urgency": {"type": "score", "instructions": "How urgent is this?", "criteria": ["No disruption", "One workflow blocked", "Widespread outage"]}
+      },
+      "expect": {"urgency": {"type": "score", "answer": 2.0}}
+    }
+  ]
+}
