@@ -1,0 +1,40 @@
+{
+  "id": "d1-local",
+  "name": "D1 Local (System One)",
+  "description": "Typed decision provider backed by a local LiquidAI d1-Omni (MLX system_one) runner on loopback.",
+  "categories": ["other"],
+  "contracts": {
+    "decisionProviders": ["d1-local"]
+  },
+  "decisionModels": [
+    {
+      "provider": "d1-local",
+      "id": "d1-omni-2b",
+      "name": "D1-Omni 2B (local MLX)",
+      "capabilities": {
+        "questionTypes": ["boolean", "choice", "score"],
+        "maxQuestions": 32,
+        "maxChoiceAlternatives": 32,
+        "maxScoreLevels": 10,
+        "confidence": "provider-specific"
+      }
+    }
+  ],
+  "activation": {
+    "onStartup": true
+  },
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "baseUrl": {
+        "type": "string",
+        "description": "Loopback /v1/decisions endpoint of the local d1 system_one runner."
+      },
+      "timeoutMs": {
+        "type": "number",
+        "description": "Per-evaluation HTTP timeout in milliseconds."
+      }
+    }
+  }
+}

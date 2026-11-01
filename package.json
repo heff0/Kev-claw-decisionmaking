@@ -1,0 +1,16 @@
+{
+  "name": "openclaw-d1-local",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Local d1-Omni decision provider plugin for OpenClaw, plus the MLX system_one runner and optional TypeSafe-compat adapter services.",
+  "license": "MIT",
+  "peerDependencies": {
+    "openclaw": ">=2026.9.6"
+  },
+  "openclaw": {
+    "extensions": ["./index.js"],
+    "compat": {
+      "minGatewayVersion": "2026.9.6"
+    }
+  }
+}
