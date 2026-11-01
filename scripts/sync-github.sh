@@ -1,7 +1,7 @@
 #!/bin/bash
 # Daily sync: commit local changes and push to GitHub (pull --rebase first).
 set -uo pipefail
-REPO="/Users/Shared/dec/Kev-claw-decisionmaking"
+REPO="/Users/Shared/dev/Kev-claw-decisionmaking"
 LOG="/Users/remote-mac/.openclaw/workspace/logs/git-sync.log"
 cd "$REPO" || exit 1
 {

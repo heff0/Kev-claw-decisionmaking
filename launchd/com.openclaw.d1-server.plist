@@ -7,10 +7,10 @@
 	<key>ProgramArguments</key>
 	<array>
 		<string>/Users/remote-mac/.openclaw/workspace/mlx-env/bin/python</string>
-		<string>/Users/Shared/dec/Kev-claw-decisionmaking/services/d1-systemone-server.py</string>
+		<string>/Users/Shared/dev/Kev-claw-decisionmaking/services/d1-systemone-server.py</string>
 	</array>
 	<key>WorkingDirectory</key>
-	<string>/Users/Shared/dec/Kev-claw-decisionmaking</string>
+	<string>/Users/Shared/dev/Kev-claw-decisionmaking</string>
 	<key>RunAtLoad</key>
 	<true/>
 	<key>KeepAlive</key>
