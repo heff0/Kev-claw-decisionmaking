@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- Rendered by scripts/install-services.sh; replace {{PLACEHOLDERS}} before use. -->
 <plist version="1.0">
 <dict>
 	<key>Label</key>
 	<string>com.openclaw.typesafe-adapter</string>
 	<key>ProgramArguments</key>
 	<array>
-		<string>/Users/remote-mac/.openclaw/workspace/mlx-env/bin/python</string>
+		<string>{{PYTHON}}</string>
 		<string>-u</string>
-		<string>/Users/Shared/dev/Kev-claw-decisionmaking/services/d1-typesafe-adapter.py</string>
+		<string>{{REPO}}/services/d1-typesafe-adapter.py</string>
 	</array>
 	<key>WorkingDirectory</key>
-	<string>/Users/Shared/dev/Kev-claw-decisionmaking</string>
+	<string>{{REPO}}</string>
 	<key>RunAtLoad</key>
 	<true/>
 	<key>KeepAlive</key>
@@ -19,8 +20,8 @@
 	<key>ThrottleInterval</key>
 	<integer>10</integer>
 	<key>StandardOutPath</key>
-	<string>/Users/remote-mac/.openclaw/workspace/logs/typesafe-adapter.log</string>
+	<string>{{LOGS}}/typesafe-adapter.log</string>
 	<key>StandardErrorPath</key>
-	<string>/Users/remote-mac/.openclaw/workspace/logs/typesafe-adapter.err.log</string>
+	<string>{{LOGS}}/typesafe-adapter.err.log</string>
 </dict>
 </plist>

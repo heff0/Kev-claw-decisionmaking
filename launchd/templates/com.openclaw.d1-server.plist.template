@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- Rendered by scripts/install-services.sh; replace {{PLACEHOLDERS}} before use. -->
 <plist version="1.0">
 <dict>
 	<key>Label</key>
@@ -7,10 +8,10 @@
 	<key>ProgramArguments</key>
 	<array>
 		<string>/bin/bash</string>
-		<string>/Users/Shared/dev/Kev-claw-decisionmaking/scripts/run-server.sh</string>
+		<string>{{REPO}}/scripts/run-server.sh</string>
 	</array>
 	<key>WorkingDirectory</key>
-	<string>/Users/Shared/dev/Kev-claw-decisionmaking</string>
+	<string>{{REPO}}</string>
 	<key>RunAtLoad</key>
 	<true/>
 	<key>KeepAlive</key>
@@ -21,9 +22,9 @@
 	<key>ThrottleInterval</key>
 	<integer>10</integer>
 	<key>StandardOutPath</key>
-	<string>/Users/remote-mac/.openclaw/workspace/logs/d1-server.log</string>
+	<string>{{LOGS}}/d1-server.log</string>
 	<key>StandardErrorPath</key>
-	<string>/Users/remote-mac/.openclaw/workspace/logs/d1-server.err.log</string>
+	<string>{{LOGS}}/d1-server.err.log</string>
 	<key>EnvironmentVariables</key>
 	<dict>
 		<key>PATH</key>

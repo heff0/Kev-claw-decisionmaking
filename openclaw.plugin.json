@@ -23,16 +23,25 @@
   "activation": {
     "onStartup": true
   },
+  "modelPricing": {
+    "providers": {
+      "d1-local": {
+        "external": false
+      }
+    }
+  },
   "configSchema": {
     "type": "object",
     "additionalProperties": false,
     "properties": {
       "baseUrl": {
         "type": "string",
+        "default": "http://127.0.0.1:8090/v1/decisions",
         "description": "Loopback /v1/decisions endpoint of the local d1 system_one runner."
       },
       "timeoutMs": {
         "type": "number",
+        "default": 15000,
         "description": "Per-evaluation HTTP timeout in milliseconds."
       }
     }

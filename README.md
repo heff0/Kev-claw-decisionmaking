@@ -3,6 +3,11 @@
 Local typed decision-making for OpenClaw using **LiquidAI d1-Omni** (MLX, Apple
 Silicon). One repo, three parts:
 
+> **Requirements:** Apple Silicon Mac (MLX + launchd only — no Linux/Intel path
+> for the local runner; on other platforms use the upstream hosted
+> `typesafe`/Jev route instead). OpenClaw **≥ 2026.10.9** (the recommended
+> `typesafe/kev-latest` path needs the Decision V2 runtime).
+
 | Part | Path | Role |
 | --- | --- | --- |
 | System One runner | `services/d1-systemone-server.py` | Preloads `LiquidAI/d1-Omni-2B-MLX-8bit` via mlx-vlm and serves `POST /v1/decisions` using the `model.system_one(...)` engine. Port **8090**. Logs per-decision usage to `logs/usage.jsonl`. |
@@ -21,10 +26,22 @@ engine over the same `/v1/decisions` contract.
 
 ## Wire it up
 
-1. Prereqs: workspace `mlx-env` venv (mlx-vlm installed) and the 8-bit 2B model
-   cached (`hf download LiquidAI/d1-Omni-2B-MLX-8bit`).
-2. Services: `scripts/install-services.sh` (renders + bootstraps the launchd
-   units; runner preload takes ~1 min, resident RAM ~3 GB).
+One command on a fresh Apple Silicon Mac (venv from pinned
+`services/requirements.txt` → checkpoint download → renders + bootstraps the
+launchd units → health check):
+
+```sh
+scripts/setup.sh              # overrides: KEV_VENV=... KEV_MODEL=...
+```
+
+Step by step, that is:
+
+1. Prereqs: a venv with `services/requirements.txt` (mlx-vlm pinned to the
+   `model.system_one` commit) and the model cached
+   (`hf download LiquidAI/d1-Omni-2B-MLX-8bit`).
+2. Services: `scripts/install-services.sh` renders
+   `launchd/templates/*.plist.template` with this machine's paths and bootstraps
+   the units (runner preload ~1 min, resident RAM ~3 GB).
 3. Plugin: point OpenClaw at this folder and enable it in config:
 
 ```json5

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- Rendered by scripts/install-services.sh; replace {{PLACEHOLDERS}} before use. -->
 <plist version="1.0">
 <dict>
 	<key>Label</key>
@@ -7,7 +8,7 @@
 	<key>ProgramArguments</key>
 	<array>
 		<string>/bin/zsh</string>
-		<string>/Users/Shared/dev/Kev-claw-decisionmaking/scripts/clean-logs.sh</string>
+		<string>{{REPO}}/scripts/clean-logs.sh</string>
 	</array>
 	<key>RunAtLoad</key>
 	<true/>
@@ -19,8 +20,8 @@
 		<integer>15</integer>
 	</dict>
 	<key>StandardOutPath</key>
-	<string>/Users/remote-mac/.openclaw/workspace/logs/kev-log-clean.log</string>
+	<string>{{LOGS}}/kev-log-clean.log</string>
 	<key>StandardErrorPath</key>
-	<string>/Users/remote-mac/.openclaw/workspace/logs/kev-log-clean.err.log</string>
+	<string>{{LOGS}}/kev-log-clean.err.log</string>
 </dict>
 </plist>

@@ -8,8 +8,8 @@
 #  - launchd stdout/err    -> truncate in place once any exceeds MAX_MB (default 10)
 set -euo pipefail
 
-REPO="/Users/Shared/dev/Kev-claw-decisionmaking"
-WS_LOGS="/Users/remote-mac/.openclaw/workspace/logs"
+REPO="${REPO:-$(cd "$(dirname "$0")/.." && pwd)}"
+WS_LOGS="${KEV_LOGS:-$HOME/.openclaw/workspace/logs}"
 KEEP_DAYS="${KEEP_DAYS:-90}"
 MAX_MB="${MAX_MB:-10}"
 

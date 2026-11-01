@@ -1,16 +1,32 @@
 {
-  "name": "Kev-claw-decisionmaking",
+  "name": "openclaw-d1-local",
   "version": "0.1.0",
   "type": "module",
   "description": "Local d1-Omni decision provider plugin for OpenClaw, plus the MLX system_one runner and optional TypeSafe-compat adapter services.",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/heff0/Kev-claw-decisionmaking.git"
+  },
+  "homepage": "https://github.com/heff0/Kev-claw-decisionmaking",
+  "files": [
+    "index.js",
+    "openclaw.plugin.json",
+    "README.md",
+    "LICENSE",
+    "launchd/",
+    "config/model.env.example",
+    "scripts/",
+    "services/",
+    "docs/"
+  ],
   "peerDependencies": {
-    "openclaw": ">=2026.9.6"
+    "openclaw": ">=2026.10.9"
   },
   "openclaw": {
     "extensions": ["./index.js"],
     "compat": {
-      "minGatewayVersion": "2026.9.6"
+      "minGatewayVersion": "2026.10.9"
     }
   }
 }

@@ -6,6 +6,18 @@ const PLUGIN_ID = "d1-local";
 const DEFAULT_BASE_URL = "http://127.0.0.1:8090/v1/decisions";
 const DEFAULT_TIMEOUT_MS = 15000;
 
+// One-time operator hint when the runner is unreachable (gateway logs).
+let failureHintShown = false;
+function hintTransportFailure(baseUrl) {
+  if (failureHintShown) return;
+  failureHintShown = true;
+  console.error(
+    `[d1-local] local decision runner unreachable at ${baseUrl}. ` +
+      `Check it with: curl -s http://127.0.0.1:8090/health ` +
+      `(restart services with scripts/install-services.sh; first-time setup: scripts/setup.sh).`
+  );
+}
+
 function resolveConfig(snapshot) {
   const configured = snapshot?.plugins?.entries?.[PLUGIN_ID]?.config ?? {};
   const baseUrl =
@@ -82,7 +94,11 @@ function createDecisionProvider(getConfig) {
           }),
           signal: controller.signal,
         });
-        if (!response.ok) return { status: "unavailable", reason: "transport" };
+        if (!response.ok) {
+          hintTransportFailure(config.baseUrl);
+          return { status: "unavailable", reason: "transport" };
+        }
+        failureHintShown = false;
         const evaluation = await response.json();
         const answers = toHostAnswers(evaluation, batch.questions);
         if (!answers) return { status: "unavailable", reason: "invalid-response" };
@@ -101,6 +117,7 @@ function createDecisionProvider(getConfig) {
         };
       } catch {
         context.signal.throwIfAborted();
+        hintTransportFailure(config.baseUrl);
         return { status: "unavailable", reason: "transport" };
       } finally {
         clearTimeout(timer);
