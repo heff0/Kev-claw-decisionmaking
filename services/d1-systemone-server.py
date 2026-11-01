@@ -20,8 +20,10 @@ import logging
 import threading
 import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
 
 MODEL = "LiquidAI/d1-Omni-2B-MLX-8bit"
+USAGE_LOG = Path(__file__).resolve().parent.parent / "logs" / "usage.jsonl"
 LISTEN_HOST = "127.0.0.1"
 LISTEN_PORT = 8090
 MAX_BYTES = 64 * 1024 * 1024
@@ -78,8 +80,19 @@ class Handler(BaseHTTPRequestHandler):
                 model = ensure_model()
                 result = model.system_one(req.get("state"), questions, media or None)
             result["model"] = MODEL
-            log.info("decision ok in %.0fms (%d questions)",
-                     (time.perf_counter() - started) * 1000, len(questions))
+            elapsed_ms = (time.perf_counter() - started) * 1000
+            log.info("decision ok in %.0fms (%d questions)", elapsed_ms, len(questions))
+            try:
+                with USAGE_LOG.open("a", encoding="utf-8") as fh:
+                    fh.write(json.dumps({
+                        "ts": int(time.time()),
+                        "model": MODEL,
+                        "questions": len(questions),
+                        "latency_ms": round(elapsed_ms),
+                        "usage": result.get("usage"),
+                    }) + "\n")
+            except OSError:
+                log.warning("failed to append to %s", USAGE_LOG)
             self._send(200, result)
         except (ValueError, OSError) as exc:
             self._send(400, {"error": str(exc)})
