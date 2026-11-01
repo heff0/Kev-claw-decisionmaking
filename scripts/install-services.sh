@@ -10,7 +10,7 @@ LA=~/Library/LaunchAgents
 LOGS=/Users/remote-mac/.openclaw/workspace/logs
 mkdir -p "$LOGS"
 
-for label in com.openclaw.d1-server com.openclaw.typesafe-adapter; do
+for label in com.openclaw.d1-server com.openclaw.typesafe-adapter com.openclaw.kev-log-clean; do
   cp "$REPO/launchd/$label.plist" "$LA/$label.plist"
   launchctl bootout "gui/$UID_/$label" 2>/dev/null || true
   sleep 1
