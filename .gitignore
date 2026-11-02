@@ -5,3 +5,4 @@ logs/
 node_modules/
 config/model.env
 
+model.env.prev
