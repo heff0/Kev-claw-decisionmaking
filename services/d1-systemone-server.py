@@ -48,6 +48,14 @@ def ensure_model():
     started = time.perf_counter()
     _model, _processor = load(MODEL)
     log.info("loaded %s in %.1fs", MODEL, time.perf_counter() - started)
+    # Warm Metal kernels once so the first real decision isn't a cold outlier.
+    try:
+        warm = {"warm": {"type": "noul", "instructions": "warmup",
+                         "criteria": {"false": "no", "true": "yes"}}}
+        _model.system_one({"message": "warmup"}, warm, None)
+        log.info("warmup decision ok")
+    except Exception as exc:  # noqa: BLE001
+        log.warning("warmup call failed: %s", exc)
     return _model
 
 
