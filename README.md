@@ -2,6 +2,26 @@
 
 **Give your OpenClaw agent a local brain.** Typed decisions (boolean, choice, score) answered by a preloaded LiquidAI d1-Omni model on your own Apple Silicon Mac - loopback-only, no cloud API, no per-token bill.
 
+**MIT · Apple Silicon · 26/26 contract checks · loopback-only · one-command setup**
+
+![D1 Local architecture](docs/architecture.svg)
+
+## Receipts — proven on a live machine
+
+- `scripts/contract-test.py` — **26/26 checks** pass against the live runner + bridge (boolean/choice/score semantics, usage passthrough, timeout handling, malformed requests)
+- `scripts/smoke.sh` — green end-to-end: renders launchd units, runner health check, live decision answered
+- `scripts/kev-usage-report.py` — real numbers from a month of daily decisions on kev's own stack:
+
+```
+Kev decision usage — last 30 days
+  decisions: 139 (216 questions, avg latency 417 ms)
+  tokens:    40,471 in / 0 out
+  equiv API cost @ $0.042/Mtok in: $0.0017
+  monthly run-rate equivalent: $0.0039/mo
+```
+
+A continuous decision stream for **$0.0039/month equivalent** — the same decisions through hosted Jev cost real money every time; here the model lives on your Mac and answers for free.
+
 Local typed decision-making for OpenClaw using **LiquidAI d1-Omni** (MLX, Apple
 Silicon). One repo, three parts:
 
