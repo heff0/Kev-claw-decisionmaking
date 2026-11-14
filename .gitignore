@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+.DS_Store
+logs/
+node_modules/
+config/model.env
+
+model.env.prev

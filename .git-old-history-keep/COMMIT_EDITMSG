@@ -1,0 +1,1 @@
+fix(packaging): add pluginApi/openclawVersion compat fields, tighten services file list (no __pycache__ in package)

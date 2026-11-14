@@ -1,0 +1,13 @@
+[core]
+	repositoryformatversion = 0
+	filemode = true
+	bare = false
+	logallrefupdates = true
+	ignorecase = true
+	precomposeunicode = true
+[user]
+	name = heff0
+	email = heff0@users.noreply.github.com
+[remote "origin"]
+	url = git@github.com:heff0/Kev-claw-decisionmaking.git
+	fetch = +refs/heads/*:refs/remotes/origin/*

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- Rendered by scripts/install-services.sh; replace {{PLACEHOLDERS}} before use. -->
+<plist version="1.0">
+<dict>
+	<key>Label</key>
+	<string>com.openclaw.d1-server</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>/bin/bash</string>
+		<string>{{REPO}}/scripts/run-server.sh</string>
+	</array>
+	<key>WorkingDirectory</key>
+	<string>{{REPO}}</string>
+	<key>RunAtLoad</key>
+	<true/>
+	<key>KeepAlive</key>
+	<dict>
+		<key>SuccessfulExit</key>
+		<false/>
+	</dict>
+	<key>ThrottleInterval</key>
+	<integer>10</integer>
+	<key>StandardOutPath</key>
+	<string>{{LOGS}}/d1-server.log</string>
+	<key>StandardErrorPath</key>
+	<string>{{LOGS}}/d1-server.err.log</string>
+	<key>EnvironmentVariables</key>
+	<dict>
+		<key>PATH</key>
+		<string>/usr/bin:/bin:/usr/sbin:/sbin</string>
+	</dict>
+</dict>
+</plist>

@@ -1,0 +1,15 @@
+# Pinned Python deps for the Kev/System One decision stack (verified 2026-11-01,
+# macOS 26 arm64, Python 3.12). mlx-vlm is pinned to the exact commit that
+# supports model.system_one for lfm3_omni builds.
+mlx==0.32.4
+mlx-metal==0.32.4
+mlx-lm==0.32.2
+mlx-vlm @ git+https://github.com/Blaizzy/mlx-vlm.git@4693cd0eaf022ae7ef61c6fdb55e17e6399879a7
+huggingface_hub==2.4.0
+transformers==5.22.1
+tokenizers==0.23.3
+safetensors==0.8.0
+numpy==2.5.4
+protobuf==7.36.2
+sentencepiece==0.2.2
+Jinja2==3.1.6
