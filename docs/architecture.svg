@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1160 540" role="img" aria-label="D1 Local architecture: OpenClaw agent, typesafe plugin, d1-local plugin, TypeSafe bridge, System One runner, d1-Omni model, usage log">
+  <style>
+    .title { font: 650 20px ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; fill: #172033; }
+    .label { font: 600 14px ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; fill: #172033; }
+    .small { font: 12px ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; fill: #5b6475; }
+    .node { stroke: #64748b; stroke-width: 1; }
+    .neutral { fill: #e2e8f0; }
+    .process { fill: #c7d2fe; }
+    .storage { fill: #99f6e4; }
+    .edge { stroke: #64748b; stroke-width: 1.5; fill: none; }
+    .zone { fill: none; stroke: #64748b; stroke-width: 1; stroke-dasharray: 6 5; opacity: 0.8; }
+    text { text-anchor: middle; }
+  </style>
+
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#64748b"/>
+    </marker>
+  </defs>
+
+  <!-- zone -->
+  <rect class="zone" x="20" y="44" width="1120" height="476" rx="14"/>
+  <text class="small" x="580" y="64">Your Apple Silicon Mac · loopback only · no cloud API</text>
+
+  <!-- title -->
+  <text class="title" x="580" y="28">D1 Local — local decision stack</text>
+
+  <!-- connectors (drawn before nodes) -->
+  <path class="edge" d="M 260 165 C 295 165, 295 100, 330 100" marker-end="url(#arr)"/>
+  <text class="small" x="292" y="126">questions</text>
+  <path class="edge" d="M 260 175 C 295 175, 295 240, 330 240" stroke-dasharray="4 4" marker-end="url(#arr)"/>
+  <text class="small" x="292" y="222">fallback</text>
+  <path class="edge" d="M 540 100 L 610 100" marker-end="url(#arr)"/>
+  <text class="small" x="575" y="92">kev dialect</text>
+  <path class="edge" d="M 715 140 L 715 200" marker-end="url(#arr)"/>
+  <text class="small" x="758" y="172">translate</text>
+  <path class="edge" d="M 540 240 L 610 240" marker-end="url(#arr)"/>
+  <path class="edge" d="M 820 240 C 855 240, 855 175, 890 175" marker-end="url(#arr)"/>
+  <text class="small" x="862" y="214">system_one</text>
+  <path class="edge" d="M 715 280 L 715 380" stroke-dasharray="4 4" marker-end="url(#arr)"/>
+  <text class="small" x="749" y="332">usage log</text>
+
+  <!-- nodes -->
+  <rect class="node neutral" x="40" y="120" width="220" height="90" rx="10"/>
+  <text class="label" x="150" y="158">OpenClaw agent</text>
+  <text class="small" x="150" y="180">typed questions &amp; state</text>
+
+  <rect class="node process" x="330" y="60" width="210" height="80" rx="10"/>
+  <text class="label" x="435" y="94">typesafe plugin</text>
+  <text class="small" x="435" y="116">recommended path</text>
+
+  <rect class="node process" x="330" y="200" width="210" height="80" rx="10"/>
+  <text class="label" x="435" y="234">d1-local plugin</text>
+  <text class="small" x="435" y="256">fallback, direct to runner</text>
+
+  <rect class="node process" x="610" y="60" width="210" height="80" rx="10"/>
+  <text class="label" x="715" y="94">TypeSafe bridge</text>
+  <text class="small" x="715" y="116">:8009 /v1/systemone</text>
+
+  <rect class="node process" x="610" y="200" width="210" height="80" rx="10" stroke="#3b82f6" stroke-width="2"/>
+  <text class="label" x="715" y="234">System One runner</text>
+  <text class="small" x="715" y="256">:8090 /v1/decisions</text>
+
+  <rect class="node storage" x="890" y="130" width="230" height="90" rx="10"/>
+  <text class="label" x="1005" y="168">LiquidAI d1-Omni-2B</text>
+  <text class="small" x="1005" y="190">MLX, preloaded, 8-bit</text>
+
+  <rect class="node storage" x="610" y="380" width="210" height="70" rx="10"/>
+  <text class="label" x="715" y="412">logs/usage.jsonl</text>
+  <text class="small" x="715" y="434">per-decision tokens &amp; cost</text>
+
+  <!-- legend -->
+  <rect class="node process" x="40" y="452" width="26" height="16" rx="3"/>
+  <text class="small" x="120" y="464" text-anchor="start">plugin / service</text>
+  <rect class="node storage" x="210" y="452" width="26" height="16" rx="3"/>
+  <text class="small" x="290" y="464" text-anchor="start">on-device model &amp; logs</text>
+</svg>
