@@ -22,6 +22,24 @@ Kev decision usage — last 30 days
 
 A continuous decision stream for **$0.0039/month equivalent** — the same decisions through hosted Jev cost real money every time; here the model lives on your Mac and answers for free.
 
+## Decision quality — graded eval on the live runner
+
+`python3 scripts/grade.py` posts each case to the live runner and checks the
+answer, the label, and the confidence bounds:
+
+| Case | What the 2B model sees | What it must get right | Result |
+| --- | --- | --- | --- |
+| `outage-escalate` | “Checkout is failing for every customer since the last deploy.” | escalate = **true**, confidence ≥ 0.7 | ✅ 328 ms |
+| `routine-noul` | “Hi, can you reset my password? I forgot it.” | escalate = **false** — routine request | ✅ 73 ms |
+| `route-support` | “The mobile app crashes every time I open the settings page.” | route = **support** (typed choice) | ✅ 67 ms |
+| `route-billing` | “I was double charged on my last invoice and want a refund.” | route = **billing** (typed choice) | ✅ 66 ms |
+| `score-low-urgency` | “Typo on the About page: ‘Recieve’ should be ‘Receive’.” | urgency score = **0.0** | ✅ 93 ms |
+| `score-high-urgency` | “Production database is down. No customer can log in.” | urgency score = **2.0** | ✅ 66 ms |
+
+**6/6 pass, avg latency 115 ms.** Boolean, choice, and score types all graded —
+the model routes, escalates, and rates urgency correctly on a 2B parameter model
+running on a desktop Mac.
+
 Local typed decision-making for OpenClaw using **LiquidAI d1-Omni** (MLX, Apple
 Silicon). One repo, three parts:
 
