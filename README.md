@@ -6,6 +6,10 @@
 
 ![D1 Local architecture](docs/architecture.svg)
 
+Live demo, captured on the Mac mini — `grade.py` answering 6/6 graded decisions, then the usage report:
+
+![D1 Local demo reel: 6/6 graded eval + usage report](docs/demo-reel.gif)
+
 ## Receipts — proven on a live machine
 
 - `scripts/contract-test.py` — **26/26 checks** pass against the live runner + bridge (boolean/choice/score semantics, usage passthrough, timeout handling, malformed requests)
