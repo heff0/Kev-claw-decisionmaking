@@ -1,6 +1,6 @@
 {
   "name": "openclaw-d1-local",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "description": "Runs typed decisions locally on Apple Silicon: your OpenClaw agent queries a LiquidAI d1-Omni model over loopback - no cloud API, no per-token bill, private state stays on your machine.",
   "license": "MIT",
