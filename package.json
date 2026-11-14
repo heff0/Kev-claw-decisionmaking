@@ -2,7 +2,7 @@
   "name": "openclaw-d1-local",
   "version": "0.1.0",
   "type": "module",
-  "description": "Local d1-Omni decision provider plugin for OpenClaw, plus the MLX system_one runner and optional TypeSafe-compat adapter services.",
+  "description": "Runs typed decisions locally on Apple Silicon: your OpenClaw agent queries a LiquidAI d1-Omni model over loopback - no cloud API, no per-token bill, private state stays on your machine.",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -36,5 +36,13 @@
     "build": {
       "openclawVersion": "2026.11.3"
     }
-  }
+  },
+  "keywords": [
+    "decision-intelligence",
+    "local-llm",
+    "apple-silicon",
+    "mlx",
+    "openclaw-plugin",
+    "openclaw-decision-provider"
+  ]
 }

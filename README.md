@@ -1,4 +1,6 @@
-# openclaw-d1-local
+# D1 Local - Your Agent Decides On Its Own
+
+**Give your OpenClaw agent a local brain.** Typed decisions (boolean, choice, score) answered by a preloaded LiquidAI d1-Omni model on your own Apple Silicon Mac - loopback-only, no cloud API, no per-token bill.
 
 Local typed decision-making for OpenClaw using **LiquidAI d1-Omni** (MLX, Apple
 Silicon). One repo, three parts:

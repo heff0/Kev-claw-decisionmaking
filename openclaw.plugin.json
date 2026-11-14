@@ -1,10 +1,14 @@
 {
   "id": "d1-local",
-  "name": "D1 Local (System One)",
-  "description": "Typed decision provider backed by a local LiquidAI d1-Omni (MLX system_one) runner on loopback.",
-  "categories": ["other"],
+  "name": "D1 Local - Your Agent Decides On Its Own",
+  "description": "Runs typed boolean/choice/score decisions locally on Apple Silicon. Your OpenClaw agent queries a preloaded LiquidAI d1-Omni model over loopback: no cloud API, no per-token bill, state stays on your machine. One-command setup, 26/26 contract-tested, launchd-managed.",
+  "categories": [
+    "other"
+  ],
   "contracts": {
-    "decisionProviders": ["d1-local"]
+    "decisionProviders": [
+      "d1-local"
+    ]
   },
   "decisionModels": [
     {
@@ -12,7 +16,11 @@
       "id": "d1-omni-2b",
       "name": "D1-Omni 2B (local MLX)",
       "capabilities": {
-        "questionTypes": ["boolean", "choice", "score"],
+        "questionTypes": [
+          "boolean",
+          "choice",
+          "score"
+        ],
         "maxQuestions": 32,
         "maxChoiceAlternatives": 32,
         "maxScoreLevels": 10,
