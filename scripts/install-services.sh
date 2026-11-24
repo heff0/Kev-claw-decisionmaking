@@ -27,7 +27,10 @@ fi
 
 mkdir -p "$LOGS"
 
-for label in com.openclaw.d1-server com.openclaw.typesafe-adapter com.openclaw.kev-log-clean; do
+# kev-watchdog is the self-heal unit: it re-bootstraps the other three after a
+# reboot, an app-managed update, or any LaunchAgent reconcile pass that drops
+# them from the gui domain. Keep it in this list.
+for label in com.openclaw.d1-server com.openclaw.typesafe-adapter com.openclaw.kev-log-clean com.openclaw.kev-watchdog; do
   tmpl="$REPO/launchd/templates/$label.plist.template"
   [ -f "$tmpl" ] || { echo "missing template $tmpl" >&2; exit 1; }
   sed -e "s|{{REPO}}|$REPO|g" \
@@ -45,6 +48,13 @@ echo "waiting for runner health..."
 for i in $(seq 1 90); do
   if curl -fsS http://127.0.0.1:8090/health >/dev/null 2>&1; then
     echo "runner healthy:"; curl -s http://127.0.0.1:8090/health; echo
+    for j in $(seq 1 15); do
+      curl -fsS http://127.0.0.1:8009/health 2>/dev/null | grep -q '"upstream_ok":[[:space:]]*true' && break
+      sleep 2
+    done
+    echo "adapter:"; curl -s http://127.0.0.1:8009/health; echo
+    curl -fsS http://127.0.0.1:8009/health 2>/dev/null | grep -q '"upstream_ok":[[:space:]]*true' \
+      || { echo "adapter not reaching upstream; check $LOGS/typesafe-adapter.err.log" >&2; exit 1; }
     exit 0
   fi
   sleep 2

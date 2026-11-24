@@ -19,14 +19,50 @@ Dialect differences handled:
 """
 
 import json
+import logging
+import os
 import time
+import urllib.error
+import urllib.parse
 import urllib.request
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
+log = logging.getLogger("d1-typesafe-adapter")
+
 LISTEN_HOST = "127.0.0.1"
-LISTEN_PORT = 8009
-UPSTREAM = "http://127.0.0.1:8090/v1/decisions"
+LISTEN_PORT = int(os.environ.get("KEV_ADAPTER_PORT", "8009"))
+UPSTREAM = os.environ.get("KEV_UPSTREAM", "http://127.0.0.1:8090/v1/decisions")
+# The runner serves /health at the origin root, not under the decisions path.
+_default_origin = urllib.parse.urlsplit(UPSTREAM)
+UPSTREAM_HEALTH = os.environ.get(
+    "KEV_UPSTREAM_HEALTH",
+    f"{_default_origin.scheme}://{_default_origin.netloc}/health",
+)
 MAX_BYTES = 4 * 1024 * 1024
+# Keep strictly below the caller's own timeout so the adapter answers before the
+# caller gives up (orphaned upstream work + broken pipes were the old failure).
+UPSTREAM_TIMEOUT = float(os.environ.get("KEV_UPSTREAM_TIMEOUT", "12"))
+
+_health_cache = {"ts": 0.0, "ok": False, "detail": "never"}
+
+
+def upstream_health():
+    """Cached liveness probe of the decision runner, so /health reports the
+    truth about the whole chain instead of just this process."""
+    now = time.monotonic()
+    if now - _health_cache["ts"] < 5:
+        return _health_cache
+    _health_cache["ts"] = now
+    try:
+        with urllib.request.urlopen(UPSTREAM_HEALTH, timeout=1.5) as resp:
+            body = json.loads(resp.read().decode("utf-8"))
+        _health_cache["ok"] = True
+        _health_cache["detail"] = {"model": body.get("model"), "loaded": body.get("loaded")}
+    except Exception as exc:  # noqa: BLE001
+        _health_cache["ok"] = False
+        _health_cache["detail"] = str(exc)
+    return _health_cache
 
 
 def _entry_label(entry, i):
@@ -127,11 +163,16 @@ class Handler(BaseHTTPRequestHandler):
 
     def _send(self, code, obj):
         body = json.dumps(obj).encode("utf-8")
-        self.send_response(code)
-        self.send_header("Content-Type", "application/json")
-        self.send_header("Content-Length", str(len(body)))
-        self.end_headers()
-        self.wfile.write(body)
+        try:
+            self.send_response(code)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+        except (BrokenPipeError, ConnectionResetError):
+            # Caller hung up (timeout/abort). Expected; do not spam tracebacks.
+            log.info("client disconnected before reading %s response", code)
+
 
     def do_POST(self):
         if self.path.rstrip("/") != "/v1/systemone":
@@ -148,14 +189,26 @@ class Handler(BaseHTTPRequestHandler):
             payload = {"state": req.get("state"), "questions": wire_questions}
             upstream_body = json.dumps(payload).encode("utf-8")
             started = time.perf_counter()
-            upstream = urllib.request.Request(
-                UPSTREAM,
-                data=upstream_body,
-                headers={"Content-Type": "application/json"},
-                method="POST",
-            )
-            with urllib.request.urlopen(upstream, timeout=55) as resp:
-                result = json.loads(resp.read().decode("utf-8"))
+            attempt = 0
+            while True:
+                attempt += 1
+                try:
+                    upstream = urllib.request.Request(
+                        UPSTREAM,
+                        data=upstream_body,
+                        headers={"Content-Type": "application/json"},
+                        method="POST",
+                    )
+                    with urllib.request.urlopen(upstream, timeout=UPSTREAM_TIMEOUT) as resp:
+                        result = json.loads(resp.read().decode("utf-8"))
+                    break
+                except (urllib.error.URLError, TimeoutError, OSError) as exc:
+                    # One quick retry covers a runner that is mid-restart under
+                    # launchd (kickstart/respawn) rather than actually down.
+                    if attempt >= 2:
+                        raise
+                    log.warning("upstream attempt 1 failed (%s); retrying", exc)
+                    time.sleep(1.0)
             latency = int((time.perf_counter() - started) * 1000)
             answers = {
                 qid: translate_answer(ans, wire_questions.get(qid, {}))
@@ -169,11 +222,23 @@ class Handler(BaseHTTPRequestHandler):
             }
             self._send(200, out)
         except Exception as exc:  # noqa: BLE001
+            # Failures must be visible in the service log: silent 502s were why
+            # a three-day outage never showed up in any log line.
+            log.error("adapter failure: %s: %s", type(exc).__name__, exc)
             self._send(502, {"error": f"adapter failure: {exc}"})
 
     def do_GET(self):
         if self.path.rstrip("/") == "/health":
-            self._send(200, {"ok": True, "upstream": UPSTREAM})
+            probe = upstream_health()
+            self._send(
+                200 if probe["ok"] else 503,
+                {
+                    "ok": bool(probe["ok"]),
+                    "upstream": UPSTREAM,
+                    "upstream_ok": bool(probe["ok"]),
+                    "upstream_detail": probe["detail"],
+                },
+            )
         else:
             self._send(404, {"error": "not found"})
 

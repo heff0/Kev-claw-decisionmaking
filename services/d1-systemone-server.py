@@ -37,16 +37,43 @@ log = logging.getLogger("d1-systemone")
 _lock = threading.Lock()
 _model = None
 _processor = None
+_started_at = time.time()
+_counters = {"decisions": 0, "failures": 0, "last_error": None}
+
+
+def _load_offline():
+    """Load straight from the local HF cache: no network round-trip, so a
+    reboot with no internet still brings the decision stack up."""
+    from huggingface_hub import snapshot_download
+    from mlx_vlm.utils import load
+
+    local = snapshot_download(MODEL, local_files_only=True)
+    log.info("using cached model at %s", local)
+    return load(local)
+
+
+def _load_hub():
+    from mlx_vlm.utils import load
+
+    return load(MODEL)
+
+
+def _attempt_load():
+    problems = []
+    for source, loader in (("local cache", _load_offline), ("huggingface hub", _load_hub)):
+        try:
+            return loader()
+        except Exception as exc:  # noqa: BLE001
+            problems.append(f"{source}: {type(exc).__name__}: {exc}")
+    raise RuntimeError("model load failed (" + " | ".join(problems) + ")")
 
 
 def ensure_model():
     global _model, _processor
     if _model is not None:
         return _model
-    from mlx_vlm.utils import load
-
     started = time.perf_counter()
-    _model, _processor = load(MODEL)
+    _model, _processor = _attempt_load()
     log.info("loaded %s in %.1fs", MODEL, time.perf_counter() - started)
     # Warm Metal kernels once so the first real decision isn't a cold outlier.
     try:
@@ -114,11 +141,13 @@ class Handler(BaseHTTPRequestHandler):
             elapsed_ms = (time.perf_counter() - started) * 1000
             clear_mlx_cache()
             log.info("decision ok in %.0fms (%d questions)", elapsed_ms, len(questions))
+            _counters["decisions"] += 1
             try:
                 with USAGE_LOG.open("a", encoding="utf-8") as fh:
                     fh.write(json.dumps({
                         "ts": int(time.time()),
                         "model": MODEL,
+                        "status": "ok",
                         "questions": len(questions),
                         "latency_ms": round(elapsed_ms),
                         "usage": result.get("usage"),
@@ -127,20 +156,59 @@ class Handler(BaseHTTPRequestHandler):
                 log.warning("failed to append to %s", USAGE_LOG)
             self._send(200, result)
         except (ValueError, OSError) as exc:
+            _counters["failures"] += 1
+            _counters["last_error"] = f"{type(exc).__name__}: {exc}"
+            log.warning("decision rejected: %s", _counters["last_error"])
             self._send(400, {"error": str(exc)})
         except Exception as exc:  # noqa: BLE001
+            _counters["failures"] += 1
+            _counters["last_error"] = f"{type(exc).__name__}: {exc}"
             log.exception("decision failed")
+            try:
+                with USAGE_LOG.open("a", encoding="utf-8") as fh:
+                    fh.write(json.dumps({
+                        "ts": int(time.time()),
+                        "model": MODEL,
+                        "status": "error",
+                        "error": _counters["last_error"],
+                    }) + "\n")
+            except OSError:
+                pass
             self._send(500, {"error": f"decision failed: {exc}"})
 
     def do_GET(self):
         if self.path.rstrip("/") == "/health":
-            self._send(200, {"ok": True, "model": MODEL, "loaded": _model is not None})
+            self._send(200, {
+                "ok": _model is not None,
+                "model": MODEL,
+                "loaded": _model is not None,
+                "uptime_s": round(time.time() - _started_at),
+                "decisions": _counters["decisions"],
+                "failures": _counters["failures"],
+                "last_error": _counters["last_error"],
+            })
         else:
             self._send(404, {"error": "not found"})
 
 
 if __name__ == "__main__":
-    ensure_model()  # preload at startup; launchd restarts on failure
+    # Preload at startup with bounded backoff so an offline boot or a hub
+    # hiccup does not turn into an instant crash-respawn loop hammering the hub.
+    attempts = int(os.environ.get("KEV_STARTUP_ATTEMPTS", "3"))
+    backoffs = [float(x) for x in os.environ.get("KEV_STARTUP_BACKOFF", "5,25").split(",")]
+    for attempt in range(1, attempts + 1):
+        try:
+            ensure_model()
+            break
+        except Exception as exc:  # noqa: BLE001
+            _counters["last_error"] = f"startup load: {exc}"
+            if attempt >= attempts:
+                log.error("startup model load failed after %d attempts: %s", attempt, exc)
+                raise SystemExit(1)
+            delay = backoffs[min(attempt - 1, len(backoffs) - 1)]
+            log.warning("startup load attempt %d/%d failed (%s); retrying in %.0fs",
+                        attempt, attempts, exc, delay)
+            time.sleep(delay)
     server = ThreadingHTTPServer((LISTEN_HOST, LISTEN_PORT), Handler)
     log.info("d1 system_one server on http://%s:%d/v1/decisions", LISTEN_HOST, LISTEN_PORT)
     server.serve_forever()

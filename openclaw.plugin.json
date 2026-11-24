@@ -51,6 +51,26 @@
         "type": "number",
         "default": 15000,
         "description": "Per-evaluation HTTP timeout in milliseconds."
+      },
+      "autoHeal": {
+        "type": "boolean",
+        "default": true,
+        "description": "Re-bootstrap the launchd decision units on gateway startup and when the runner becomes unreachable (scripts/ensure-services.sh)."
+      },
+      "breakerThreshold": {
+        "type": "number",
+        "default": 3,
+        "description": "Consecutive transport failures before the provider fails fast instead of waiting for the timeout each time."
+      },
+      "breakerCooldownMs": {
+        "type": "number",
+        "default": 60000,
+        "description": "How long the provider stays fail-fast after its circuit breaker trips."
+      },
+      "healThrottleMs": {
+        "type": "number",
+        "default": 300000,
+        "description": "Minimum gap between self-heal attempts in milliseconds."
       }
     }
   }
