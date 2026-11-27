@@ -93,6 +93,31 @@ def translate_question(q):
     q = dict(q)
     kind = q.get("type")
     criteria = q.get("criteria")
+    # The OpenClaw gateway contract v2 spells booleans "boolean"; the d1
+    # engine only knows "noul". Older plugin builds pre-translated this,
+    # newer ones pass "boolean" straight through, so normalize here too.
+    if kind == "boolean":
+        q["type"] = kind = "noul"
+    if kind in ("noul", "bool"):
+        # The engine requires the question itself as `instructions`. The
+        # plugin sends it as `question`/`prompt`/`text` depending on build;
+        # a missing instructions was the silent 400->502 root cause on
+        # 2026-11-27 (gateway rejections with no adapter-visible detail).
+        if not q.get("instructions"):
+            text = None
+            for k in ("question", "prompt", "text", "label", "description"):
+                v = q.get(k)
+                if isinstance(v, str) and v.strip():
+                    text = v.strip()
+                    break
+            q["instructions"] = text or "Is this true given the situation?"
+        if isinstance(criteria, list) and len(criteria) == 2:
+            q["criteria"] = {
+                "false": _entry_desc(criteria[0], _entry_label(criteria[0], 0)),
+                "true": _entry_desc(criteria[1], _entry_label(criteria[1], 1)),
+            }
+        elif not isinstance(criteria, dict):
+            q["criteria"] = {"false": "false", "true": "true"}
     if kind == "choice" and isinstance(criteria, list):
         keymap = {}
         mapping = {}
@@ -105,11 +130,19 @@ def translate_question(q):
         q["_keymap"] = keymap
     elif kind == "score" and isinstance(criteria, list):
         q["criteria"] = [_entry_desc(e, _entry_label(e, i)) for i, e in enumerate(criteria)]
-    elif kind in ("noul", "bool") and isinstance(criteria, list) and len(criteria) == 2:
-        q["criteria"] = {
-            "false": _entry_desc(criteria[0], _entry_label(criteria[0], 0)),
-            "true": _entry_desc(criteria[1], _entry_label(criteria[1], 1)),
-        }
+    # choice/score: ensure instructions too (engine requires them).
+    if kind in ("choice", "score") and not q.get("instructions"):
+        for k in ("question", "prompt", "text", "label"):
+            v = q.get(k)
+            if isinstance(v, str) and v.strip():
+                q["instructions"] = v.strip()
+                break
+        else:
+            q["instructions"] = "Choose the best option given the situation."
+    # Strip plugin-side text fields the engine would choke on.
+    for k in ("question", "prompt", "text", "label"):
+        if "instructions" in q:
+            q.pop(k, None)
     return q
 
 

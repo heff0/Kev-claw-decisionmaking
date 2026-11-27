@@ -171,6 +171,18 @@ def main():
     check("adapter noul list-criteria -> noul prob",
           ba.get("type") == "noul" and 0 <= ba.get("noul", -1) <= 1, json.dumps(ba)[:140])
 
+    print("adapter gateway contract-v2 dialect (boolean + question, no instructions)")
+    code, r = http(ADAPTER + "/v1/systemone", "POST", {
+        "model": "kev-latest",
+        "state": {"type": "text", "text": "Checkout is failing for every customer since the last deploy."},
+        "questions": {
+            "escalate": {"type": "boolean", "question": "Does this need incident response?"},
+        }})
+    ea = (r.get("answers") or {}).get("escalate", {})
+    check("adapter boolean->noul with question-derived instructions",
+          code == 200 and ea.get("type") == "noul" and 0 <= ea.get("noul", -1) <= 1,
+          json.dumps(r)[:160])
+
     print("adapter invalid inputs + upstream error passthrough")
     code, _ = http(ADAPTER + "/nope", "POST", {"questions": {"x": CHOICE_Q}})
     check("adapter unknown POST path -> 404", code == 404, f"got {code}")
