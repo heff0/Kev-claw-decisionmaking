@@ -45,7 +45,7 @@ the model routes, escalates, and rates urgency correctly on a 2B parameter model
 running on a desktop Mac.
 
 Local typed decision-making for OpenClaw using **LiquidAI d1-Omni** (MLX, Apple
-Silicon). One repo, three parts:
+Silicon). One repo, four parts:
 
 > **Requirements:** Apple Silicon Mac (MLX + launchd only — no Linux/Intel path
 > for the local runner; on other platforms use the upstream hosted
@@ -57,8 +57,9 @@ Silicon). One repo, three parts:
 | System One runner | `services/d1-systemone-server.py` | Preloads `LiquidAI/d1-Omni-2B-MLX-8bit` via mlx-vlm and serves `POST /v1/decisions` using the `model.system_one(...)` engine. Port **8090**. Logs per-decision usage to `logs/usage.jsonl`. |
 | TypeSafe bridge | `services/d1-typesafe-adapter.py` | Serves the upstream `typesafe` plugin's `/v1/systemone` local-Kev dialect on port **8009** and translates to the runner. **Recommended path** (`decisionModel: typesafe/kev-latest`) — see [docs/typesafe-integration.md](docs/typesafe-integration.md). |
 | OpenClaw plugin `d1-local` | `index.js`, `openclaw.plugin.json` | Registers a native decision provider (`d1-local/d1-omni-2b`) that talks to the runner over loopback directly. Fallback when the upstream `typesafe` plugin is unavailable. |
+| Vendored `typesafe` baseline | `vendor/typesafe/` | Absorbed copy of the released `@openclaw/typesafe` build (v2026.11.4) kept unmodified as a known-good wire-contract baseline; the lane we patch when extending question types beyond boolean/choice/score. See `vendor/typesafe/README.md`; re-absorb with `scripts/sync-typesafe.sh`. |
 
-The stack **wraps around** the upstream [`typesafe` extension](https://github.com/openclaw/openclaw/tree/a5674cb817af92312dca57bc5eba9f467ee0347e/extensions/typesafe) (`@openclaw/typesafe`, tested at v2026.10.9 / commit `a5674cb8`) as a **soft dependency**: we implement its documented local-server contract without vendoring or forking it. Integration notes, upstream patch impact, and a post-update verification checklist live in [docs/typesafe-integration.md](docs/typesafe-integration.md).
+The stack **wraps around** the upstream [`typesafe` extension](https://github.com/openclaw/openclaw/tree/a5674cb817af92312dca57bc5eba9f467ee0347e/extensions/typesafe) (`@openclaw/typesafe`, tested at v2026.10.9 / commit `a5674cb8`). The runtime path still uses the stock installed plugin — but as of 2026-11-27 we **vendor the released build** in `vendor/typesafe/` so the wire codec is a diffable in-repo baseline and extensions (richer question types, local image state) can ship as a forked provider instead of waiting upstream. Integration notes, upstream patch impact, and a post-update verification checklist live in [docs/typesafe-integration.md](docs/typesafe-integration.md).
 
 ## Why a custom runner?
 
