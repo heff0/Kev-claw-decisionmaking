@@ -1,0 +1,29 @@
+{
+  "name": "@kev/typesafe-labs",
+  "version": "2026.11.4",
+  "description": "Local fork of @openclaw/typesafe maintained in Kev-claw-decisionmaking",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:heff0/Kev-claw-decisionmaking.git"
+  },
+  "type": "module",
+  "dependencies": {
+    "typebox": "1.3.35"
+  },
+  "openclaw": {
+    "extensions": [
+      "./dist/index.js"
+    ],
+    "build": {
+      "bundledDist": false,
+      "openclawVersion": "2026.11.4"
+    }
+  },
+  "files": [
+    "dist/**",
+    "openclaw.plugin.json",
+    "README.md",
+    "assets/icon.png",
+    "assets/activity.svg"
+  ]
+}
