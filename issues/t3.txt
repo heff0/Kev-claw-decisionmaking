@@ -1,0 +1,1 @@
+d1-typesafe-adapter.py returns HTTP 502 with lossy text on upstream 400; engine's structured validation errors are dropped

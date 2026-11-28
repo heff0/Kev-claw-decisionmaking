@@ -1,0 +1,1 @@
+decisionModels.questionTypes manifest cap (≤3: boolean/choice/score) blocks locally-supported decision types (text/number/date/box/boxes/noul)
